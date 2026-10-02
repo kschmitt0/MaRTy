@@ -1,0 +1,69 @@
+---
+title: "Assignment 2: MaRTy and the Many Grades of Shade"
+format: html
+---
+
+# Download packages
+
+```{r}
+#| label: load packages
+#| include: false
+install.packages(c("tidyverse", "readxl", "lmtest", "car"))
+library(tidyverse)
+library(readxl)
+library(lmtest)
+library(car)
+```
+
+# Import Data
+
+```{r}
+#| label: import data
+#| include: false
+marty <- read_excel('C:\\Users\\matts\\OneDrive\\Documents\\MUEP-Kyle0\\GPH 598\\MaRTy_50Grades_Subset_Working.xlsx',)
+view(marty)
+```
+
+# Step 1: Air Temperature vs. MRT
+
+Start by exploring the difference between air temperature and MRT. Choose several observations from the dataset and compare AirT_C_detrended and MRT_C_detrended. • Are air temperature and MRT usually similar? • When are the differences largest? • Why can two locations with similar air temperatures have very different MRT? Use examples from the dataset in your explanation.
+
+## Differences
+
+```{r}
+#| label: Create new variable 'diff'
+#| include: false
+marty$diff <- marty$MRT_C_detrended - marty$AirT_C_detrended
+```
+
+```{r}
+#| label: Create histogram
+#| include: true
+hist_diff <- hist(marty$diff, right = FALSE, col = "firebrick", las = 1)
+```
+
+The histogram shows us that broadly, air temperature and MRT are fairly similar. The largest columns are all clustered around 0, meaning there are a lot of results with only a small difference between the two variables. However, there is also a small but noticeable cluster of results with a larger difference (around 20-40), showing that there are plenty of exceptions where the two values diverge.
+
+## Linear Regression
+
+```{r}
+#| label: linear regression
+#| include: true
+# dependent variable: diff
+# independent variables: Time_of_Day, Surface_Type, Shade_Category2
+
+# build model
+reg_diff <- lm(diff ~ Time_of_Day + Surface_Type + Shade_Category2, data = marty)
+
+summary(reg_diff)
+```
+
+```{r}
+#| label: ANOVA
+#| include: true
+anova(reg_diff)
+```
+
+# Step 2: How Much Does Shade Matter?
+
+Compare MRT across the three main shade categories: Sun-exposed, Tree shade, and Engineered/Built shade. Create one figure that clearly communicates the comparison. Choose a visualization that helps answer the question and briefly explain what the figure shows. Your figure might illustrate average MRT by shade category, individual observations, MRT at different times of day, or another useful comparison. \# Step 3: Does Time of Day Matter? Compare the three measurement times, considering sun-exposed and shaded locations. • When are the largest differences between sun and shade? • What happens by 8:30 PM? • Why might shade have a very different effect during the day than after sunset? Include either a second figure or a small summary table. \# Step 4: Become a Radiation Detective Choose two locations with noticeably different MRT values, for example: • sun vs. tree shade; • sun vs. engineered shade; • tree shade vs. engineered shade; or • two different kinds of shade. Use the available site information to explain why their MRT values differ. Consider direct sunlight, type of shade, surrounding surfaces and materials, vegetation, time of day, air temperature, wind speed, and/or other characteristics you think matter. You do not need to use every variable. Focus on the factors that provide the best explanation. \# Step 5: What Does This Mean for Urban Design? Imagine that a city has limited resources to improve pedestrian thermal environments. Based on your analysis, write a short recommendation answering: What should planners or designers consider when providing shade for pedestrians? Do not simply conclude that "shade is good." Use evidence from the dataset to discuss whether the type, timing, and surrounding environment of shade matter. \# Your Submission Submit a short report of approximately 700–1,000 words, plus your figures and/or tables. You do not need to write a formal scientific paper. Your report should contain: 1. Brief introduction a. What question are you investigating, and what did you expect to find? 2. Methods a. Briefly describe the provided dataset and state what tool or tools you used for the analysis. If you used AI, identify the AI tool. 3. Results a. Include your air temperature vs. MRT comparison, at least two clear figures or tables, and your comparison among shade categories and times of day. 4. Radiation Detective a. Explain the difference between two contrasting locations using evidence from the dataset. 5. Discussion and Urban Design Recommendation a. What do the measurements tell us about shade and pedestrian heat exposure? What should urban designers take away from your analysis?
