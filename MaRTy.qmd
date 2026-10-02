@@ -66,7 +66,13 @@ reg_diff <- lm(diff ~ Time_of_Day + Surface_Type + Shade_Category2 + RH + WindSp
 summary(reg_diff)
 ```
 The two most influential variables were 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed'. They both have p-values of the highest significance rating (confidence interval of 100%) and the highest coefficients in the model. 'Time_of_Day8:30 PM' has a coefficient of -15.46, meaning it causes the difference between air temperature and MRT to go in a negative direction, while 'Shade_Category2Sun-exposed' has a coefficient of 15.46, causing the difference to increase.
-The variable 'Shade_Category2Engineered shade' had the next greatest influence, with a coefficient of 4.99 and a confidence interval of 99%, meaning it has a moderate effect of increasing the difference between air temperature and MRT. Finally, the smallest statistically significant impact captured in this model is from 'Surface_Typeimpervious', which had a coefficient of 3.25 at a confidence interval of 95%, similarly showing a moderate increase in the difference between air temperature and MRT.
+The variable 'Shade_Category2Engineered shade' also had a statistically significant influence, with a coefficient of 4.99 and a confidence interval of 99%, meaning it has a moderate effect of increasing the difference between air temperature and MRT.
+Overall, this model has an adjusted R-squared of 0.68, meaning it explains about 68% of variation in the difference between air temperature and MRT.
+
+```{r}
+car::vif(reg_diff)
+```
+The VIF analysis shows that none of the variables have a VIF of greater than 2.0, much lower than the typical threshold of 5.0, confirming that multicollinearity is not an issue with this model. 
 
 ```{r}
 #| label: ANOVA
