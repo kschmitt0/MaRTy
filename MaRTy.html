@@ -99,15 +99,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="download-packages" class="level1">
-<h1>Download packages</h1>
+<section id="load-packages" class="level1">
+<h1>Load packages</h1>
 </section>
 <section id="import-data" class="level1">
 <h1>Import Data</h1>
 </section>
 <section id="step-1-air-temperature-vs.-mrt" class="level1">
 <h1>Step 1: Air Temperature vs.&nbsp;MRT</h1>
-<p>Start by exploring the difference between air temperature and MRT. Choose several observations from the dataset and compare AirT_C_detrended and MRT_C_detrended. • Are air temperature and MRT usually similar? • When are the differences largest? • Why can two locations with similar air temperatures have very different MRT? Use examples from the dataset in your explanation.</p>
+<p>Start by exploring the difference between air temperature and MRT. Choose several observations from the dataset and compare AirT_C_detrended and MRT_C_detrended.</p>
+<p>• Are air temperature and MRT usually similar?</p>
+<p>• When are the differences largest?</p>
+<p>• Why can two locations with similar air temperatures have very different MRT?</p>
+<p>Use examples from the dataset in your explanation.</p>
 <section id="differences" class="level2">
 <h2 class="anchored" data-anchor-id="differences">Differences</h2>
 <div class="cell">
@@ -124,62 +128,204 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="linear-regression">Linear Regression</h2>
+<p>To answer the question of why two locations with similar air temperatures can have different MRT, a multiple linear regression model was created to measure the influence of different variables on the difference between air temperature and MRT. The independent variables selected for this model were Time_of_Day, Surface_Type, Shade_Category2, RH, and WindSpeed_ms because they are each representative of a unique measurement, avoiding the problem of multicollinearity.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dependent variable: diff</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># independent variables: Time_of_Day, Surface_Type, Shade_Category2</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># independent variables: Time_of_Day, Surface_Type, Shade_Category2, RH, WindSpeed_ms</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># build model</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>reg_diff <span class="ot">&lt;-</span> <span class="fu">lm</span>(diff <span class="sc">~</span> Time_of_Day <span class="sc">+</span> Surface_Type <span class="sc">+</span> Shade_Category2, <span class="at">data =</span> marty)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>reg_diff <span class="ot">&lt;-</span> <span class="fu">lm</span>(diff <span class="sc">~</span> Time_of_Day <span class="sc">+</span> Surface_Type <span class="sc">+</span> Shade_Category2 <span class="sc">+</span> RH <span class="sc">+</span> WindSpeed_ms, <span class="at">data =</span> marty)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(reg_diff)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = diff ~ Time_of_Day + Surface_Type + Shade_Category2, 
-    data = marty)
+lm(formula = diff ~ Time_of_Day + Surface_Type + Shade_Category2 + 
+    RH + WindSpeed_ms, data = marty)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
--15.032  -4.309   1.006   4.944  14.003 
+-15.492  -3.955   1.092   4.894  13.915 
 
 Coefficients:
-                                Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)                       3.2876     2.3731   1.385   0.1685    
-Time_of_Day3:30 PM               -0.3747     1.4085  -0.266   0.7907    
-Time_of_Day8:30 PM              -15.4574     1.4085 -10.975  &lt; 2e-16 ***
-Surface_Typegravel                3.1119     2.2117   1.407   0.1620    
-Surface_Typeimpervious            3.2464     1.7870   1.817   0.0717 .  
-Shade_Category2Engineered shade   4.9895     1.9514   2.557   0.0118 *  
-Shade_Category2Sun-exposed       15.4619     1.7321   8.927 5.77e-15 ***
-Shade_Category2Tree shade         2.3169     1.8959   1.222   0.2241    
+                                 Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                       1.70161    2.76766   0.615   0.5398    
+Time_of_Day3:30 PM                0.07057    1.55420   0.045   0.9639    
+Time_of_Day8:30 PM              -15.06639    1.52085  -9.907  &lt; 2e-16 ***
+Surface_Typegravel                2.75927    2.23682   1.234   0.2198    
+Surface_Typeimpervious            2.88574    1.80529   1.598   0.1126    
+Shade_Category2Engineered shade   4.88870    1.95633   2.499   0.0138 *  
+Shade_Category2Sun-exposed       15.38850    1.76921   8.698 2.22e-14 ***
+Shade_Category2Tree shade         2.05451    1.91307   1.074   0.2850    
+RH                                0.05832    0.08882   0.657   0.5127    
+WindSpeed_ms                      1.07224    0.87521   1.225   0.2229    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 6.531 on 121 degrees of freedom
-Multiple R-squared:  0.6972,    Adjusted R-squared:  0.6797 
-F-statistic:  39.8 on 7 and 121 DF,  p-value: &lt; 2.2e-16</code></pre>
+Residual standard error: 6.531 on 119 degrees of freedom
+Multiple R-squared:  0.7022,    Adjusted R-squared:  0.6797 
+F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
+<p>The two most influential variables were ‘Time_of_Day8:30 PM’ and ‘Shade_Category2Sun-exposed’. They both have p-values of the highest significance rating (confidence interval of 100%) and the highest coefficients in the model. ‘Time_of_Day8:30 PM’ has a coefficient of -15.46, meaning it causes the difference between air temperature and MRT to go in a negative direction, while ‘Shade_Category2Sun-exposed’ has a coefficient of 15.46, causing the difference to increase. The variable ‘Shade_Category2Engineered shade’ also had a statistically significant influence, with a coefficient of 4.99 and a confidence interval of 99%, meaning it has a moderate effect of increasing the difference between air temperature and MRT. Overall, this model has an adjusted R-squared of 0.68, meaning it explains about 68% of variation in the difference between air temperature and MRT.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(reg_diff)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Analysis of Variance Table
-
-Response: diff
-                 Df Sum Sq Mean Sq F value  Pr(&gt;F)    
-Time_of_Day       2 6687.4  3343.7 78.3974 &lt; 2e-16 ***
-Surface_Type      2  254.2   127.1  2.9798 0.05455 .  
-Shade_Category2   3 4941.2  1647.1 38.6174 &lt; 2e-16 ***
-Residuals       121 5160.7    42.7                    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>vif_reg_diff <span class="ot">&lt;-</span> car<span class="sc">::</span><span class="fu">vif</span>(reg_diff)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(vif_reg_diff)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">GVIF</th>
+<th style="text-align: right;">Df</th>
+<th style="text-align: right;">GVIF^(1/(2*Df))</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Time_of_Day</td>
+<td style="text-align: right;">1.682624</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1.138929</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Surface_Type</td>
+<td style="text-align: right;">1.527595</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1.111737</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Shade_Category2</td>
+<td style="text-align: right;">1.705605</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1.093066</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RH</td>
+<td style="text-align: right;">1.620202</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.272872</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WindSpeed_ms</td>
+<td style="text-align: right;">1.194580</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1.092968</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The VIF analysis shows that none of the variables have a VIF of greater than 2.0, much lower than the typical threshold of 5.0, confirming that multicollinearity is not an issue with this model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>anova_reg_diff <span class="ot">&lt;-</span> <span class="fu">anova</span>(reg_diff)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(anova_reg_diff)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Df</th>
+<th style="text-align: right;">Sum Sq</th>
+<th style="text-align: right;">Mean Sq</th>
+<th style="text-align: right;">F value</th>
+<th style="text-align: right;">Pr(&gt;F)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Time_of_Day</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6687.40942</td>
+<td style="text-align: right;">3343.70471</td>
+<td style="text-align: right;">78.4013320</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Surface_Type</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">254.17746</td>
+<td style="text-align: right;">127.08873</td>
+<td style="text-align: right;">2.9799061</td>
+<td style="text-align: right;">0.0546019</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Shade_Category2</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4941.17763</td>
+<td style="text-align: right;">1647.05921</td>
+<td style="text-align: right;">38.6193301</td>
+<td style="text-align: right;">0.0000000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RH</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">21.54406</td>
+<td style="text-align: right;">21.54406</td>
+<td style="text-align: right;">0.5051531</td>
+<td style="text-align: right;">0.4786353</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">WindSpeed_ms</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">64.01199</td>
+<td style="text-align: right;">64.01199</td>
+<td style="text-align: right;">1.5009177</td>
+<td style="text-align: right;">0.2229496</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Residuals</td>
+<td style="text-align: right;">119</td>
+<td style="text-align: right;">5075.17985</td>
+<td style="text-align: right;">42.64857</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </section>
 </section>
 <section id="step-2-how-much-does-shade-matter" class="level1">
 <h1>Step 2: How Much Does Shade Matter?</h1>
-<p>Compare MRT across the three main shade categories: Sun-exposed, Tree shade, and Engineered/Built shade. Create one figure that clearly communicates the comparison. Choose a visualization that helps answer the question and briefly explain what the figure shows. Your figure might illustrate average MRT by shade category, individual observations, MRT at different times of day, or another useful comparison. # Step 3: Does Time of Day Matter? Compare the three measurement times, considering sun-exposed and shaded locations. • When are the largest differences between sun and shade? • What happens by 8:30 PM? • Why might shade have a very different effect during the day than after sunset? Include either a second figure or a small summary table. # Step 4: Become a Radiation Detective Choose two locations with noticeably different MRT values, for example: • sun vs.&nbsp;tree shade; • sun vs.&nbsp;engineered shade; • tree shade vs.&nbsp;engineered shade; or • two different kinds of shade. Use the available site information to explain why their MRT values differ. Consider direct sunlight, type of shade, surrounding surfaces and materials, vegetation, time of day, air temperature, wind speed, and/or other characteristics you think matter. You do not need to use every variable. Focus on the factors that provide the best explanation. # Step 5: What Does This Mean for Urban Design? Imagine that a city has limited resources to improve pedestrian thermal environments. Based on your analysis, write a short recommendation answering: What should planners or designers consider when providing shade for pedestrians? Do not simply conclude that “shade is good.” Use evidence from the dataset to discuss whether the type, timing, and surrounding environment of shade matter. # Your Submission Submit a short report of approximately 700–1,000 words, plus your figures and/or tables. You do not need to write a formal scientific paper. Your report should contain: 1. Brief introduction a. What question are you investigating, and what did you expect to find? 2. Methods a. Briefly describe the provided dataset and state what tool or tools you used for the analysis. If you used AI, identify the AI tool. 3. Results a. Include your air temperature vs.&nbsp;MRT comparison, at least two clear figures or tables, and your comparison among shade categories and times of day. 4. Radiation Detective a. Explain the difference between two contrasting locations using evidence from the dataset. 5. Discussion and Urban Design Recommendation a. What do the measurements tell us about shade and pedestrian heat exposure? What should urban designers take away from your analysis?</p>
+<p>Compare MRT across the three main shade categories: Sun-exposed, Tree shade, and Engineered/Built shade.</p>
+<p>Create one figure that clearly communicates the comparison. Choose a visualization that helps answer the question and briefly explain what the figure shows. Your figure might illustrate average MRT by shade category, individual observations, MRT at different times of day, or another useful comparison.</p>
+</section>
+<section id="step-3-does-time-of-day-matter" class="level1">
+<h1>Step 3: Does Time of Day Matter?</h1>
+<p>Compare the three measurement times, considering sun-exposed and shaded locations.</p>
+<p>• When are the largest differences between sun and shade?</p>
+<p>• What happens by 8:30 PM?</p>
+<p>• Why might shade have a very different effect during the day than after sunset?</p>
+<p>Include either a second figure or a small summary table.</p>
+</section>
+<section id="step-4-become-a-radiation-detective" class="level1">
+<h1>Step 4: Become a Radiation Detective</h1>
+<p>Choose two locations with noticeably different MRT values, for example:</p>
+<p>• sun vs.&nbsp;tree shade;</p>
+<p>• sun vs.&nbsp;engineered shade;</p>
+<p>• tree shade vs.&nbsp;engineered shade; or</p>
+<p>• two different kinds of shade.</p>
+<p>Use the available site information to explain why their MRT values differ. Consider direct sunlight, type of shade, surrounding surfaces and materials, vegetation, time of day, air temperature, wind speed, and/or other characteristics you think matter. You do not need to use every variable. Focus on the factors that provide the best explanation.</p>
+</section>
+<section id="step-5-what-does-this-mean-for-urban-design" class="level1">
+<h1>Step 5: What Does This Mean for Urban Design?</h1>
+<p>Imagine that a city has limited resources to improve pedestrian thermal environments. Based on your analysis, write a short recommendation answering: What should planners or designers consider when providing shade for pedestrians? Do not simply conclude that “shade is good.” Use evidence from the dataset to discuss whether the type, timing, and surrounding environment of shade matter.</p>
+</section>
+<section id="your-submission" class="level1">
+<h1>Your Submission</h1>
+<p>Submit a short report of approximately 700–1,000 words, plus your figures and/or tables. You do not need to write a formal scientific paper. Your report should contain:</p>
+<p>1. Brief introduction</p>
+<p>a. What question are you investigating, and what did you expect to find?</p>
+<p>2. Methods</p>
+<p>a. Briefly describe the provided dataset and state what tool or tools you used for the analysis. If you used AI, identify the AI tool.</p>
+<p>3. Results</p>
+<p>a. Include your air temperature vs.&nbsp;MRT comparison, at least two clear figures or tables, and your comparison among shade categories and times of day.</p>
+<p>4. Radiation Detective</p>
+<p>a. Explain the difference between two contrasting locations using evidence from the dataset.</p>
+<p>5. Discussion and Urban Design Recommendation</p>
+<p>a. What do the measurements tell us about shade and pedestrian heat exposure? What should urban designers take away from your analysis?</p>
 </section>
 
 </main>
