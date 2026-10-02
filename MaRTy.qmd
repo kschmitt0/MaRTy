@@ -112,6 +112,7 @@ bars_MRT <- ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Cat
     scale_y_continuous(breaks = seq(0, 60, by = 10))    
 bars_MRT + theme_classic()
 ```
+This bar chart shows how average MRT compares across each shade category. From this, we can see that built shade has the lowest average MRT, followed closely by tree shade, with engineered shade having the highest average MRT among types of shade, but still much lower than the average MRT in sun-exposed areas.
 
 # Step 3: Does Time of Day Matter?
 
