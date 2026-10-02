@@ -71,6 +71,8 @@ summary(reg_diff)
 The two most influential variables were 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed'. They both have p-values of the highest significance rating (confidence interval of 100%) and the highest coefficients in the model. 'Time_of_Day8:30 PM' has a coefficient of -15.46, meaning it causes the difference between air temperature and MRT to go in a negative direction, while 'Shade_Category2Sun-exposed' has a coefficient of 15.46, causing the difference to increase. The variable 'Shade_Category2Engineered shade' also had a statistically significant influence, with a coefficient of 4.99 and a confidence interval of 99%, meaning it has a moderate effect of increasing the difference between air temperature and MRT. Overall, this model has an adjusted R-squared of 0.68, meaning it explains about 68% of variation in the difference between air temperature and MRT.
 
 ```{r}
+#| label: VIF
+#| include: true
 vif_reg_diff <- car::vif(reg_diff)
 kable(vif_reg_diff)
 ```
@@ -90,6 +92,13 @@ This ANOVA analysis confirms that there is a large variance in the Time_of_Day a
 Compare MRT across the three main shade categories: Sun-exposed, Tree shade, and Engineered/Built shade.
 
 Create one figure that clearly communicates the comparison. Choose a visualization that helps answer the question and briefly explain what the figure shows. Your figure might illustrate average MRT by shade category, individual observations, MRT at different times of day, or another useful comparison.
+
+```{r}
+#| label: bar chart
+#| include: true
+ggplot(marty, aes(Shade_Category2, MRT_C_detrended)) +
+    geom_bar(position='dodge', stat='summary', fun='mean')
+```
 
 # Step 3: Does Time of Day Matter?
 
