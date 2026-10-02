@@ -96,8 +96,13 @@ Create one figure that clearly communicates the comparison. Choose a visualizati
 ```{r}
 #| label: bar chart
 #| include: true
-ggplot(marty, aes(Shade_Category2, MRT_C_detrended)) +
-    geom_bar(position='dodge', stat='summary', fun='mean')
+ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Category2)) +
+    geom_bar(position='dodge', stat='summary', fun='mean', width = 0.7) +
+    labs(
+        title = "Mean MRT by Shade Category",
+        x = "Shade Category",
+        y = "Mean MRT"
+    )
 ```
 
 # Step 3: Does Time of Day Matter?
