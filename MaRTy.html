@@ -285,12 +285,29 @@ F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 </table>
 </div>
 </div>
+<p>This ANOVA analysis confirms that there is a large variance in the Time_of_Day and Shade_Category2 categorical variables, as shown by their high F values and low p-values. Surface_Type also shows up as the next most impactful category, but with a much smaller F value and a confidence interval of around 94.5%, just under the usual threshold for statistical significance.</p>
 </section>
 </section>
 <section id="step-2-how-much-does-shade-matter" class="level1">
 <h1>Step 2: How Much Does Shade Matter?</h1>
 <p>Compare MRT across the three main shade categories: Sun-exposed, Tree shade, and Engineered/Built shade.</p>
 <p>Create one figure that clearly communicates the comparison. Choose a visualization that helps answer the question and briefly explain what the figure shows. Your figure might illustrate average MRT by shade category, individual observations, MRT at different times of day, or another useful comparison.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(marty, <span class="fu">aes</span>(Shade_Category2, MRT_C_detrended, <span class="at">fill =</span> Shade_Category2)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">position=</span><span class="st">'dodge'</span>, <span class="at">stat=</span><span class="st">'summary'</span>, <span class="at">fun=</span><span class="st">'mean'</span>, <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Mean MRT by Shade Category"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Shade Category"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Mean MRT"</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="MaRTy_files/figure-html/bar%20chart-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="step-3-does-time-of-day-matter" class="level1">
 <h1>Step 3: Does Time of Day Matter?</h1>

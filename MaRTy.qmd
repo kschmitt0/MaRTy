@@ -96,13 +96,20 @@ Create one figure that clearly communicates the comparison. Choose a visualizati
 ```{r}
 #| label: bar chart
 #| include: true
-ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Category2)) +
+bars_MRT <- ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Category2)) +
     geom_bar(position='dodge', stat='summary', fun='mean', width = 0.7) +
+    scale_fill_manual(values = c(
+        "Built shade" = "firebrick",
+        "Engineered shade" = "steelblue",
+        "Sun-exposed" = "goldenrod",
+        "Tree shade" = "forestgreen"
+    )) +
     labs(
         title = "Mean MRT by Shade Category",
         x = "Shade Category",
         y = "Mean MRT"
-    )
+    ) 
+bars_MRT + theme_classic()
 ```
 
 # Step 3: Does Time of Day Matter?
