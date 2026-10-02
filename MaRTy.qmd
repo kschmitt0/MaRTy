@@ -108,7 +108,8 @@ bars_MRT <- ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Cat
         title = "Mean MRT by Shade Category",
         x = "Shade Category",
         y = "Mean MRT"
-    ) 
+    ) + 
+    scale_y_continuous(breaks = seq(0, 60, by = 10))    
 bars_MRT + theme_classic()
 ```
 
