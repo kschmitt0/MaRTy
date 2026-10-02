@@ -52,15 +52,16 @@ hist_diff <- hist(marty$diff, right = FALSE, col = "firebrick", las = 1)
 The histogram shows us that broadly, air temperature and MRT are fairly similar. The largest columns are all clustered around 0, meaning there are a lot of results with only a small difference between the two variables. However, there is also a small but noticeable cluster of results with a larger difference (around 20-40), showing that there are plenty of exceptions where the two values diverge.
 
 ## Linear Regression
+To answer the question of why two locations with similar air temperatures can have different MRT, a multiple linear regression model was created to measure the influence of different variables on the difference between air temperature and MRT. The independent variables selected for this model were Time_of_Day, Surface_Type, Shade_Category2, RH, and WindSpeed_ms because they are each representative of a unique measurement, avoiding the problem of multicollinearity.
 
 ```{r}
 #| label: linear regression
 #| include: true
 # dependent variable: diff
-# independent variables: Time_of_Day, Surface_Type, Shade_Category2
+# independent variables: Time_of_Day, Surface_Type, Shade_Category2, RH, WindSpeed_ms
 
 # build model
-reg_diff <- lm(diff ~ Time_of_Day + Surface_Type + Shade_Category2, data = marty)
+reg_diff <- lm(diff ~ Time_of_Day + Surface_Type + Shade_Category2 + RH + WindSpeed_ms, data = marty)
 
 summary(reg_diff)
 ```
