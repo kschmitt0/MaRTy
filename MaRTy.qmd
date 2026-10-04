@@ -155,9 +155,8 @@ line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group
     )
 line_TOD + theme_classic()
 ```
-This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. This could be because 
+This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. 
 
-[make new graph breaking down by shade type?]
 ```{r}
 #| label: prepare data (shade category)
 #| include: false
@@ -182,6 +181,11 @@ line_shade <- ggplot(shade_summary, aes(x = time, y = MRT_mean, color = Shade_Ca
     )
 line_shade + theme_classic()
 ```
+Differences in shade category do not account for this unexpected result, as all types of shade individually have a higher average MRT than sun-exposed locations, so this was not the result of say, built and engineered shade being higher outweighing tree shade being lower.
+[cut section?]
+
+
+
 
 # Step 4: Become a Radiation Detective
 
