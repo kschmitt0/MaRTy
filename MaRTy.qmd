@@ -126,6 +126,27 @@ Compare the three measurement times, considering sun-exposed and shaded location
 
 Include either a second figure or a small summary table.
 
+```{r}
+#| label: prepare data
+#| include: false
+marty$time <- as.integer(format(strptime(marty$Time_of_Day, "%I:%M %p"), "%H%M"))
+marty$shade <- if_else(marty$Shade_Type == "exposed", 0L, 1L)
+
+tod_longer <- marty |>
+    pivot_longer(cols = (c(time, shade, MRT_C_detrended)))
+```
+
+```{r}
+#| label: time of day line graph
+#| include: true
+line_TOD <- ggplot(tod_longer, aes(x = time, y = MRT_C_detrended)) +
+    geom_line(aes(color = shade)) +
+    scale_color_manual(name = 'Time of Day', labels = c('exposed', 'shade'),
+        values = c('red', 'green'))
+
+```
+
+
 # Step 4: Become a Radiation Detective
 
 Choose two locations with noticeably different MRT values, for example:
