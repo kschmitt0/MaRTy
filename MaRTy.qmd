@@ -155,7 +155,7 @@ line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group
     )
 line_TOD + theme_classic()
 ```
-This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. 
+This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. Naturally, shade has a much greater impact on MRT during the day when it can block the sun's radiation than at night when all areas are 'shaded'. However, this alone does not explain why shaded areas would have a higher MRT than exposed areas at night.
 
 ```{r}
 #| label: prepare data (shade category)
@@ -184,8 +184,24 @@ line_shade + theme_classic()
 Differences in shade category do not account for this unexpected result, as all types of shade individually have a higher average MRT than sun-exposed locations, so this was not the result of say, built and engineered shade being higher outweighing tree shade being lower.
 [cut section?]
 
-
-
+```{r}
+surface_summary <- marty |>
+    group_by(time, Surface_Type) |>
+    summarize(MRT_mean = mean(MRT_C_detrended, na.tm = TRUE), .groups = "drop")
+```
+```{r}
+#| label: surface type line graph
+#| include: true
+line_surf <- ggplot(surface_summary, aes(x = time, y = MRT_mean, color = Surface_Type, group = Surface_Type)) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 3) +
+    labs(
+        title = "Average MRT over Time",
+        x = "Time (24-hour)",
+        y = "Average MRT"
+    )
+line_surf + theme_classic()
+```
 
 # Step 4: Become a Radiation Detective
 
