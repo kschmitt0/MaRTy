@@ -132,7 +132,6 @@ Include either a second figure or a small summary table.
 marty$time <- as.integer(format(strptime(marty$Time_of_Day, "%I:%M %p"), "%H%M"))
 marty$shade <- if_else(marty$Shade_Type == "exposed", 0L, 1L)
 marty$shade <- factor(marty$shade, levels = c(0, 1), labels = c("exposed", "shade"))
-marty <- marty |> arrange(time)
 
 # create averages for shade + time
 tod_summary <- marty |>
@@ -155,6 +154,33 @@ line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group
         y = "Average MRT"
     )
 line_TOD + theme_classic()
+```
+This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. This could be because 
+
+[make new graph breaking down by shade type?]
+```{r}
+#| label: prepare data (shade category)
+#| include: false
+
+shade_summary <- marty |>
+    group_by(time, Shade_Category2) |>
+    summarize(MRT_mean = mean(MRT_C_detrended, na.tm = TRUE), .groups = "drop")
+```
+```{r}
+#| label: shade category line graph
+#| include: true
+line_shade <- ggplot(shade_summary, aes(x = time, y = MRT_mean, color = Shade_Category2, group = Shade_Category2)) +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 3) +
+    scale_color_manual(
+        name = "Shade Type", 
+        values = c("goldenrod", "steelblue", "firebrick", "forestgreen")) +
+    labs(
+        title = "Average MRT over Time",
+        x = "Time (24-hour)",
+        y = "Average MRT"
+    )
+line_shade + theme_classic()
 ```
 
 # Step 4: Become a Radiation Detective
