@@ -137,7 +137,7 @@ marty <- marty |> arrange(time)
 # create averages for shade + time
 tod_summary <- marty |>
     group_by(time, shade) |>
-    summarize(MRT_mean = mean(MRT_C_detrended, na.tm = TRUE))
+    summarize(MRT_mean = mean(MRT_C_detrended, na.tm = TRUE), .groups = "drop")
 ```
 
 ```{r}
@@ -145,12 +145,12 @@ tod_summary <- marty |>
 #| include: true
 line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group = shade)) +
     geom_line() +
+    geom_point() +
     scale_color_manual(
         name = "Time of Day", 
         values = c("red", "green"))
-
+print(line_TOD)
 ```
-
 
 # Step 4: Become a Radiation Detective
 
