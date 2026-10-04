@@ -144,12 +144,17 @@ tod_summary <- marty |>
 #| label: time of day line graph
 #| include: true
 line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group = shade)) +
-    geom_line() +
-    geom_point() +
+    geom_line(linewidth = 1.2) +
+    geom_point(size = 3) +
     scale_color_manual(
-        name = "Time of Day", 
-        values = c("red", "green"))
-print(line_TOD)
+        name = "Shade Type", 
+        values = c("red", "green")) +
+    labs(
+        title = "Average MRT over Time",
+        x = "Time (24-hour)",
+        y = "Average MRT"
+    )
+line_TOD + theme_classic()
 ```
 
 # Step 4: Become a Radiation Detective
