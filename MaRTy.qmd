@@ -148,7 +148,7 @@ line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group
     geom_point(size = 3) +
     scale_color_manual(
         name = "Shade Type", 
-        values = c("red", "green")) +
+        values = c("goldenrod", "steelblue")) +
     labs(
         title = "Average MRT over Time",
         x = "Time (24-hour)",
