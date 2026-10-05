@@ -1,8 +1,18 @@
 ---
 title: "Assignment 2: MaRTy and the Many Grades of Shade"
+author: "Kyle Schmitt"
 format: 
     pdf:
         mainfont: "Times New Roman"
+        sansfont: "Times New Roman"
+        documentclass: article
+        classoption: 12pt
+        include-in-header: header.tex
+        keep-md: true
+execute:
+    echo: false
+    warning: false
+    message: false
 ---
 
 ```{r}
@@ -13,6 +23,7 @@ library(readxl)
 library(lmtest)
 library(car)
 library(knitr)
+library(kableExtra)
 ```
 
 ```{r}
@@ -37,7 +48,12 @@ marty$diff <- marty$MRT_C_detrended - marty$AirT_C_detrended
 ```{r}
 #| label: Create histogram
 #| include: true
-hist_diff <- hist(marty$diff, right = FALSE, col = "firebrick", las = 1)
+#| fig-cap: "Differences between Air Temperature and MRT"
+hist_diff <- ggplot(marty, aes(x = diff)) +
+    geom_histogram(
+        color = "black", fill = "steelblue") +
+        labs(x = "Difference", y = "Frequency")
+hist_diff + theme_classic()
 ```
 
 The histogram shows us that broadly, air temperature and MRT are fairly similar. The largest columns are all clustered around 0, meaning there are a lot of results with only a small difference between the two variables. However, there is also a small but noticeable cluster of results with a larger difference (around 20-40), showing that there are plenty of exceptions where the two values diverge.
@@ -57,12 +73,13 @@ reg_diff <- lm(diff ~ Time_of_Day + Surface_Type + Shade_Category2 + RH + WindSp
 
 summary(reg_diff)
 ```
-
+\bigskip
 The two most influential variables were 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed'. They both have p-values of the highest significance rating (confidence interval of 100%) and the highest coefficients in the model. 'Time_of_Day8:30 PM' has a coefficient of -15.46, meaning it causes the difference between air temperature and MRT to go in a negative direction, while 'Shade_Category2Sun-exposed' has a coefficient of 15.46, causing the difference to increase. The variable 'Shade_Category2Engineered shade' also had a statistically significant influence, with a coefficient of 4.99 and a confidence interval of 99%, meaning it has a moderate effect of increasing the difference between air temperature and MRT. Overall, this model has an adjusted R-squared of 0.68, meaning it explains about 68% of variation in the difference between air temperature and MRT.
 
 ```{r}
 #| label: VIF
 #| include: true
+#| tbl-cap: "VIF Analysis"
 vif_reg_diff <- car::vif(reg_diff)
 kable(vif_reg_diff)
 ```
@@ -72,6 +89,7 @@ The VIF analysis shows that none of the variables have a VIF of greater than 2.0
 ```{r}
 #| label: ANOVA
 #| include: true
+#| tbl-cap: "ANOVA Analysis"
 anova_reg_diff <- anova(reg_diff)
 kable(anova_reg_diff)
 ```
@@ -83,6 +101,9 @@ This ANOVA analysis confirms that there is a large variance in the Time_of_Day a
 ```{r}
 #| label: bar chart
 #| include: true
+#| fig-width: 8
+#| fig-height: 6
+#| fig-cap: "Mean MRT by Shade Category"
 bars_MRT <- ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Category2)) +
     geom_bar(position='dodge', stat='summary', fun='mean', width = 0.7) +
     scale_fill_manual(values = c(
@@ -92,7 +113,6 @@ bars_MRT <- ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Cat
         "Tree shade" = "forestgreen"
     )) +
     labs(
-        title = "Mean MRT by Shade Category",
         x = "Shade Category",
         y = "Mean MRT"
     ) + 
@@ -120,6 +140,9 @@ tod_summary <- marty |>
 ```{r}
 #| label: time of day line graph
 #| include: true
+#| fig-width: 8
+#| fig-height: 6
+#| fig-cap: "Average MRT over Time"
 line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group = shade)) +
     geom_line(linewidth = 1.2) +
     geom_point(size = 3) +
@@ -127,53 +150,39 @@ line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group
         name = "Shade Type", 
         values = c("goldenrod", "steelblue")) +
     labs(
-        title = "Average MRT over Time",
         x = "Time (24-hour)",
         y = "Average MRT"
     )
 line_TOD + theme_classic()
 ```
 
-This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. Naturally, shade has a much greater impact on MRT during the day when it can block the sun's radiation than at night when all areas are 'shaded'. However, this alone does not explain why shaded areas would have a higher MRT than exposed areas at night.
-
-```{r}
-#| label: prepare data (shade category)
-#| include: false
-
-shade_summary <- marty |>
-    group_by(time, Shade_Category2) |>
-    summarize(MRT_mean = mean(MRT_C_detrended, na.tm = TRUE), .groups = "drop")
-```
-
-```{r}
-#| label: shade category line graph
-#| include: true
-line_shade <- ggplot(shade_summary, aes(x = time, y = MRT_mean, color = Shade_Category2, group = Shade_Category2)) +
-    geom_line(linewidth = 1.2) +
-    geom_point(size = 3) +
-    scale_color_manual(
-        name = "Shade Type", 
-        values = c("goldenrod", "steelblue", "firebrick", "forestgreen")) +
-    labs(
-        title = "Average MRT over Time",
-        x = "Time (24-hour)",
-        y = "Average MRT"
-    )
-line_shade + theme_classic()
-```
-
-Differences in shade category do not account for this unexpected result, as all types of shade individually have a higher average MRT than sun-exposed locations, so this was not the result of say, built and engineered shade being higher outweighing tree shade being lower. \[cut section?\]
+This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. Naturally, shade has a much greater impact on MRT during the day when it can block the sun's radiation than at night when all areas are 'shaded'. 
 
 # Site Comparison
 
 ```{r}
+#| tbl-cap: "Site Comparison"
 examples <- marty[c(72, 13), ]
-examples <- subset(examples, select = -c(Shade_Category2, Shade_Type_No, Surface_Cover_No, time, shade, Latitude, Longitude, Tree_Type, Shade_Type))
-kable(examples)
+examples <- subset(examples, select = -c(Shade_Category2, Shade_Type_No, Surface_Cover_No, time, shade, Latitude, Longitude, Tree_Type, Shade_Type, diff, Surface_Type, Location_ID))
+
+names(examples)[1] <- "\\makecell{Shade\\\\Category}"
+names(examples)[2] <- "\\makecell{Surface\\\\Cover}"
+names(examples)[3] <- "\\makecell{Time of\\\\Day}"
+names(examples)[5] <- "\\makecell{Wind\\\\Speed}"
+names(examples)[6] <- "\\makecell{Air\\\\Temp (C)}"
+names(examples)[7] <- "\\makecell{MRT\\\\(C)}"
+
+kable(examples, longtable = FALSE)
 ```
 
 These two sites have very similar air temperatures (37.61C and 35.30C) and very different MRTs (35.08C and 59.94C). One is a tree-shaded gravel site from 8:30PM, and the other is a sun-exposed concrete site at 12:30PM. They both have fairly low relative humidity (7.93 and 10.79) and similar wind speeds (0.40 and 0.45). Gravel and concrete are both impervious surfaces, so the biggest differences between the sites are shade type and time of day. This is consistent with the regression model built earlier which found 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed' to be the most influential variables in determining the difference between air temperature and MRT.
 
 # Implications for Urban Design
 
-Based on this data from MaRTy, it is evident that the biggest factor planners and designers have control over in improving thermal comfort for pedestrians is simply the presence of shade. This is demonstrated by the significance of sun exposure in the regression analysis as well as the site comparison which exemplified how the presence of shade can make a big difference regardless of surrounding environmental factors such as surface type, humidity, or wind speed. The best strategy for increasing shade will be different for different cities. For example, a desert city like Phoenix may have relatively high barriers to implementing a tree canopy-based shade plan due to water scarcity and extreme heat damaging growing trees, while a rural town in Vermont may find planting trees to be a more cost-efficient strategy than building engineered shade structures. While city-specific factors like this will play a dominant role in guiding urban design choices for increasing shade, the MaRTy data does tell us that shade from built structures has the lowest MRT of all shade types. This is great news for cities because built structures deliver numerous other benefits besides shade - they are housing, businesses, transportation infrastructure - all things that are desirable to have. However, buildings are not typically designed in a way that deliberately maximizes shade for pedestrians. This is where more intentional work by planners and designers is required. Planners should update zoning codes with features like increasing densities in residential areas and decreasing minimum setback requirements so that buildings become taller and closer to the sidewalk, producing more shade for pedestrians. These changes would also work to solve other problems such as improving housing affordability and decreasing environmentally harmful sprawling development patterns. Designers should take into account more nuanced details when designing spaces for pedestrians such as decreasing impervious surfaces which retain and reflect more heat than natural surfaces, or ensuring that shade-providing structures do not block the cooling effects of wind. Even if these variables have a smaller impact statistically, all together they can add up to make a meaningful difference.
+Based on this data from MaRTy, it is evident that the biggest factor planners and designers have control over in improving thermal comfort for pedestrians is simply the presence of shade. This is demonstrated by the significance of sun exposure in the regression analysis as well as the site comparison which exemplified how the presence of shade can make a big difference regardless of surrounding environmental factors such as surface type, humidity, or wind speed. 
+
+The best strategy for increasing shade will be different for different cities. For example, a desert city like Phoenix may have relatively high barriers to implementing a tree canopy-based shade plan due to water scarcity and extreme heat damaging growing trees, while a rural town in Vermont may find planting trees to be a more cost-efficient strategy than building engineered shade structures. 
+
+While city-specific factors like this will play a dominant role in guiding urban design choices for increasing shade, the MaRTy data does tell us that shade from built structures has the lowest MRT of all shade types. This is great news for cities because built structures deliver numerous other benefits besides shade - they are housing, businesses, transportation infrastructure - all things that are desirable to have. 
+
+However, buildings are not typically designed in a way that deliberately maximizes shade for pedestrians. This is where more intentional work by planners and designers is required. Planners should update zoning codes with features like increasing densities in residential areas and decreasing minimum setback requirements so that buildings become taller and closer to the sidewalk, producing more shade for pedestrians. These changes would also work to solve other problems such as improving housing affordability and decreasing environmentally harmful sprawling development patterns. Designers should take into account more nuanced details when designing spaces for pedestrians such as decreasing impervious surfaces which retain and reflect more heat than natural surfaces, or ensuring that shade-providing structures do not block the cooling effects of wind. Even if these variables have a smaller impact statistically, all together they can add up to make a meaningful difference.
