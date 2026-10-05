@@ -5,8 +5,6 @@ format:
         mainfont: "Times New Roman"
 ---
 
-# Load packages
-
 ```{r}
 #| label: load packages
 #| include: false
@@ -17,8 +15,6 @@ library(car)
 library(knitr)
 ```
 
-# Import Data
-
 ```{r}
 #| label: import data
 #| include: false
@@ -26,19 +22,11 @@ marty <- read_excel('C:\\Users\\matts\\OneDrive\\Documents\\MUEP-Kyle0\\GPH 598\
 view(marty)
 ```
 
-# Step 1: Air Temperature vs. MRT
+# Introduction
 
-Start by exploring the difference between air temperature and MRT. Choose several observations from the dataset and compare AirT_C_detrended and MRT_C_detrended.
+MaRTy is a mobile device used to measure mean radiant temperature (MRT) across a variety of locations and times. Data from MaRTy can be used to better inform our understanding of how pedestrians experience heat in different environments, as MaRTy directly collects information such as air temperature, wind speed, and humidity, while location data can indirectly tell us about things like what type of shade (if any) exists at that site and what type of ground surface is surrounding the device. This paper will analyze a dataset from MaRTy to answer the question, "How much does shade reduce pedestrian heat exposure, and are all types of shade equally effective?". The analysis was conducted in R without the use of AI.
 
-• Are air temperature and MRT usually similar?
-
-• When are the differences largest?
-
-• Why can two locations with similar air temperatures have very different MRT?
-
-Use examples from the dataset in your explanation.
-
-## Differences
+## Differences between air temperature and MRT
 
 ```{r}
 #| label: Create new variable 'diff'
@@ -48,7 +36,7 @@ marty$diff <- marty$MRT_C_detrended - marty$AirT_C_detrended
 
 ```{r}
 #| label: Create histogram
-#| include: true
+#| include: false
 hist_diff <- hist(marty$diff, right = FALSE, col = "firebrick", las = 1)
 ```
 
