@@ -199,6 +199,12 @@ Choose two locations with noticeably different MRT values, for example:
 
 Use the available site information to explain why their MRT values differ. Consider direct sunlight, type of shade, surrounding surfaces and materials, vegetation, time of day, air temperature, wind speed, and/or other characteristics you think matter. You do not need to use every variable. Focus on the factors that provide the best explanation.
 
+```{r}
+examples <- marty[c(72, 13), ]
+examples <- subset(examples, select = -c(Shade_Category2, Shade_Type_No, Surface_Cover_No, time, shade))
+kable(examples)
+```
+
 # Step 5: What Does This Mean for Urban Design?
 
 Imagine that a city has limited resources to improve pedestrian thermal environments. Based on your analysis, write a short recommendation answering: What should planners or designers consider when providing shade for pedestrians? Do not simply conclude that "shade is good." Use evidence from the dataset to discuss whether the type, timing, and surrounding environment of shade matter.

@@ -346,6 +346,29 @@ F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
+<p>This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. Naturally, shade has a much greater impact on MRT during the day when it can block the sun’s radiation than at night when all areas are ‘shaded’. However, this alone does not explain why shaded areas would have a higher MRT than exposed areas at night.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>line_shade <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(shade_summary, <span class="fu">aes</span>(<span class="at">x =</span> time, <span class="at">y =</span> MRT_mean, <span class="at">color =</span> Shade_Category2, <span class="at">group =</span> Shade_Category2)) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_manual</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">name =</span> <span class="st">"Shade Type"</span>, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"goldenrod"</span>, <span class="st">"steelblue"</span>, <span class="st">"firebrick"</span>, <span class="st">"forestgreen"</span>)) <span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">title =</span> <span class="st">"Average MRT over Time"</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">x =</span> <span class="st">"Time (24-hour)"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">y =</span> <span class="st">"Average MRT"</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>line_shade <span class="sc">+</span> <span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="MaRTy_files/figure-html/shade%20category%20line%20graph-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Differences in shade category do not account for this unexpected result, as all types of shade individually have a higher average MRT than sun-exposed locations, so this was not the result of say, built and engineered shade being higher outweighing tree shade being lower. [cut section?]</p>
 </section>
 <section id="step-4-become-a-radiation-detective" class="level1">
 <h1>Step 4: Become a Radiation Detective</h1>
@@ -355,6 +378,87 @@ F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>• tree shade vs.&nbsp;engineered shade; or</p>
 <p>• two different kinds of shade.</p>
 <p>Use the available site information to explain why their MRT values differ. Consider direct sunlight, type of shade, surrounding surfaces and materials, vegetation, time of day, air temperature, wind speed, and/or other characteristics you think matter. You do not need to use every variable. Focus on the factors that provide the best explanation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>examples <span class="ot">&lt;-</span> marty[<span class="fu">c</span>(<span class="dv">72</span>, <span class="dv">13</span>), ]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>examples <span class="ot">&lt;-</span> <span class="fu">subset</span>(examples, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(Shade_Category2, Shade_Type_No, Surface_Cover_No, time))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(examples)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 9%">
+<col style="width: 8%">
+<col style="width: 3%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Location_ID</th>
+<th style="text-align: right;">Latitude</th>
+<th style="text-align: right;">Longitude</th>
+<th style="text-align: left;">Shade_Category</th>
+<th style="text-align: left;">Shade_Type</th>
+<th style="text-align: left;">Tree_Type</th>
+<th style="text-align: left;">Surface_Cover</th>
+<th style="text-align: left;">Surface_Type</th>
+<th style="text-align: left;">Time_of_Day</th>
+<th style="text-align: right;">RH</th>
+<th style="text-align: right;">WindSpeed_ms</th>
+<th style="text-align: right;">AirT_C_detrended</th>
+<th style="text-align: right;">MRT_C_detrended</th>
+<th style="text-align: right;">diff</th>
+<th style="text-align: left;">shade</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">3150</td>
+<td style="text-align: right;">33.42089</td>
+<td style="text-align: right;">-111.9356</td>
+<td style="text-align: left;">Tree shade</td>
+<td style="text-align: left;">tree</td>
+<td style="text-align: left;">Thevetia peruviana</td>
+<td style="text-align: left;">gravel</td>
+<td style="text-align: left;">gravel</td>
+<td style="text-align: left;">8:30 PM</td>
+<td style="text-align: right;">7.93</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">37.61</td>
+<td style="text-align: right;">35.08</td>
+<td style="text-align: right;">-2.53</td>
+<td style="text-align: left;">shade</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3750</td>
+<td style="text-align: right;">33.41805</td>
+<td style="text-align: right;">-111.9355</td>
+<td style="text-align: left;">Sun-exposed</td>
+<td style="text-align: left;">exposed</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">concrete rough</td>
+<td style="text-align: left;">impervious</td>
+<td style="text-align: left;">12:30 PM</td>
+<td style="text-align: right;">10.79</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">35.30</td>
+<td style="text-align: right;">59.94</td>
+<td style="text-align: right;">24.64</td>
+<td style="text-align: left;">exposed</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </section>
 <section id="step-5-what-does-this-mean-for-urban-design" class="level1">
 <h1>Step 5: What Does This Mean for Urban Design?</h1>
