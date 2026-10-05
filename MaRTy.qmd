@@ -201,9 +201,10 @@ Use the available site information to explain why their MRT values differ. Consi
 
 ```{r}
 examples <- marty[c(72, 13), ]
-examples <- subset(examples, select = -c(Shade_Category2, Shade_Type_No, Surface_Cover_No, time, shade))
+examples <- subset(examples, select = -c(Shade_Category2, Shade_Type_No, Surface_Cover_No, time, shade, Latitude, Longitude, Tree_Type, Shade_Type))
 kable(examples)
 ```
+These two sites have very similar air temperatures (37.61C and 35.30C) and very different MRTs (35.08C and 59.94C). One is a tree-shaded gravel site from 8:30PM, and the other is a sun-exposed concrete site at 12:30PM. They both have fairly low relative humidity (7.93 and 10.79) and similar wind speeds (0.40 and 0.45). Gravel and concrete are both impervious surfaces, so the biggest differences between the sites are shade type and time of day. This is consistent with the regression model built earlier which found 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed' to be the most influential variables in determining the difference between air temperature and MRT. 
 
 # Step 5: What Does This Mean for Urban Design?
 

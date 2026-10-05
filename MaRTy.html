@@ -380,35 +380,26 @@ F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Use the available site information to explain why their MRT values differ. Consider direct sunlight, type of shade, surrounding surfaces and materials, vegetation, time of day, air temperature, wind speed, and/or other characteristics you think matter. You do not need to use every variable. Focus on the factors that provide the best explanation.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>examples <span class="ot">&lt;-</span> marty[<span class="fu">c</span>(<span class="dv">72</span>, <span class="dv">13</span>), ]</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>examples <span class="ot">&lt;-</span> <span class="fu">subset</span>(examples, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(Shade_Category2, Shade_Type_No, Surface_Cover_No, time))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>examples <span class="ot">&lt;-</span> <span class="fu">subset</span>(examples, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(Shade_Category2, Shade_Type_No, Surface_Cover_No, time, shade, Latitude, Longitude, Tree_Type, Shade_Type))</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(examples)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 6%">
-<col style="width: 4%">
-<col style="width: 5%">
-<col style="width: 8%">
-<col style="width: 6%">
-<col style="width: 10%">
-<col style="width: 8%">
-<col style="width: 7%">
-<col style="width: 6%">
-<col style="width: 3%">
-<col style="width: 7%">
 <col style="width: 9%">
-<col style="width: 8%">
-<col style="width: 3%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 10%">
+<col style="width: 9%">
+<col style="width: 4%">
+<col style="width: 10%">
+<col style="width: 13%">
+<col style="width: 12%">
 <col style="width: 4%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: right;">Location_ID</th>
-<th style="text-align: right;">Latitude</th>
-<th style="text-align: right;">Longitude</th>
 <th style="text-align: left;">Shade_Category</th>
-<th style="text-align: left;">Shade_Type</th>
-<th style="text-align: left;">Tree_Type</th>
 <th style="text-align: left;">Surface_Cover</th>
 <th style="text-align: left;">Surface_Type</th>
 <th style="text-align: left;">Time_of_Day</th>
@@ -417,17 +408,12 @@ F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 <th style="text-align: right;">AirT_C_detrended</th>
 <th style="text-align: right;">MRT_C_detrended</th>
 <th style="text-align: right;">diff</th>
-<th style="text-align: left;">shade</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">3150</td>
-<td style="text-align: right;">33.42089</td>
-<td style="text-align: right;">-111.9356</td>
 <td style="text-align: left;">Tree shade</td>
-<td style="text-align: left;">tree</td>
-<td style="text-align: left;">Thevetia peruviana</td>
 <td style="text-align: left;">gravel</td>
 <td style="text-align: left;">gravel</td>
 <td style="text-align: left;">8:30 PM</td>
@@ -436,15 +422,10 @@ F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 <td style="text-align: right;">37.61</td>
 <td style="text-align: right;">35.08</td>
 <td style="text-align: right;">-2.53</td>
-<td style="text-align: left;">shade</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">3750</td>
-<td style="text-align: right;">33.41805</td>
-<td style="text-align: right;">-111.9355</td>
 <td style="text-align: left;">Sun-exposed</td>
-<td style="text-align: left;">exposed</td>
-<td style="text-align: left;">NA</td>
 <td style="text-align: left;">concrete rough</td>
 <td style="text-align: left;">impervious</td>
 <td style="text-align: left;">12:30 PM</td>
@@ -453,12 +434,12 @@ F-statistic: 31.18 on 9 and 119 DF,  p-value: &lt; 2.2e-16</code></pre>
 <td style="text-align: right;">35.30</td>
 <td style="text-align: right;">59.94</td>
 <td style="text-align: right;">24.64</td>
-<td style="text-align: left;">exposed</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+<p>These two sites have very similar air temperatures (37.61C and 35.30C) and very different MRTs (35.08C and 59.94C). One is a tree-shaded gravel site from 8:30PM, and the other is a sun-exposed concrete site at 12:30PM. They both have fairly low relative humidity (7.93 and 10.79) and similar wind speeds (0.40 and 0.45). Gravel and concrete are both impervious surfaces, so the biggest differences between the sites are shade type and time of day. This is consistent with the regression model built earlier which found ‘Time_of_Day8:30 PM’ and ‘Shade_Category2Sun-exposed’ to be the most influential variables in determining the difference between air temperature and MRT.</p>
 </section>
 <section id="step-5-what-does-this-mean-for-urban-design" class="level1">
 <h1>Step 5: What Does This Mean for Urban Design?</h1>
