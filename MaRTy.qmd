@@ -26,7 +26,7 @@ view(marty)
 
 MaRTy is a mobile device used to measure mean radiant temperature (MRT) across a variety of locations and times. Data from MaRTy can be used to better inform our understanding of how pedestrians experience heat in different environments, as MaRTy directly collects information such as air temperature, wind speed, and humidity, while location data can indirectly tell us about things like what type of shade (if any) exists at that site and what type of ground surface is surrounding the device. This paper will analyze a dataset from MaRTy to answer the question, "How much does shade reduce pedestrian heat exposure, and are all types of shade equally effective?". The analysis was conducted in R without the use of AI.
 
-## Differences between air temperature and MRT
+# Air Temperature vs. MRT
 
 ```{r}
 #| label: Create new variable 'diff'
@@ -36,7 +36,7 @@ marty$diff <- marty$MRT_C_detrended - marty$AirT_C_detrended
 
 ```{r}
 #| label: Create histogram
-#| include: false
+#| include: true
 hist_diff <- hist(marty$diff, right = FALSE, col = "firebrick", las = 1)
 ```
 
@@ -78,11 +78,7 @@ kable(anova_reg_diff)
 
 This ANOVA analysis confirms that there is a large variance in the Time_of_Day and Shade_Category2 categorical variables, as shown by their high F values and low p-values. Surface_Type also shows up as the next most impactful category, but with a much smaller F value and a confidence interval of around 94.5%, just under the usual threshold for statistical significance.
 
-# Step 2: How Much Does Shade Matter?
-
-Compare MRT across the three main shade categories: Sun-exposed, Tree shade, and Engineered/Built shade.
-
-Create one figure that clearly communicates the comparison. Choose a visualization that helps answer the question and briefly explain what the figure shows. Your figure might illustrate average MRT by shade category, individual observations, MRT at different times of day, or another useful comparison.
+# How Much Does Shade Matter?
 
 ```{r}
 #| label: bar chart
@@ -106,17 +102,7 @@ bars_MRT + theme_classic()
 
 This bar chart shows how average MRT compares across each shade category. From this, we can see that built shade has the lowest average MRT, followed closely by tree shade, with engineered shade having the highest average MRT among types of shade, but still much lower than the average MRT in sun-exposed areas.
 
-# Step 3: Does Time of Day Matter?
-
-Compare the three measurement times, considering sun-exposed and shaded locations.
-
-• When are the largest differences between sun and shade?
-
-• What happens by 8:30 PM?
-
-• Why might shade have a very different effect during the day than after sunset?
-
-Include either a second figure or a small summary table.
+# Does Time of Day Matter?
 
 ```{r}
 #| label: prepare data
@@ -178,19 +164,7 @@ line_shade + theme_classic()
 
 Differences in shade category do not account for this unexpected result, as all types of shade individually have a higher average MRT than sun-exposed locations, so this was not the result of say, built and engineered shade being higher outweighing tree shade being lower. \[cut section?\]
 
-# Step 4: Become a Radiation Detective
-
-Choose two locations with noticeably different MRT values, for example:
-
-• sun vs. tree shade;
-
-• sun vs. engineered shade;
-
-• tree shade vs. engineered shade; or
-
-• two different kinds of shade.
-
-Use the available site information to explain why their MRT values differ. Consider direct sunlight, type of shade, surrounding surfaces and materials, vegetation, time of day, air temperature, wind speed, and/or other characteristics you think matter. You do not need to use every variable. Focus on the factors that provide the best explanation.
+# Site Comparison
 
 ```{r}
 examples <- marty[c(72, 13), ]
@@ -200,32 +174,6 @@ kable(examples)
 
 These two sites have very similar air temperatures (37.61C and 35.30C) and very different MRTs (35.08C and 59.94C). One is a tree-shaded gravel site from 8:30PM, and the other is a sun-exposed concrete site at 12:30PM. They both have fairly low relative humidity (7.93 and 10.79) and similar wind speeds (0.40 and 0.45). Gravel and concrete are both impervious surfaces, so the biggest differences between the sites are shade type and time of day. This is consistent with the regression model built earlier which found 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed' to be the most influential variables in determining the difference between air temperature and MRT.
 
-# Step 5: What Does This Mean for Urban Design?
-
-Imagine that a city has limited resources to improve pedestrian thermal environments. Based on your analysis, write a short recommendation answering: What should planners or designers consider when providing shade for pedestrians? Do not simply conclude that "shade is good." Use evidence from the dataset to discuss whether the type, timing, and surrounding environment of shade matter.
+# Implications for Urban Design
 
 Based on this data from MaRTy, it is evident that the biggest factor planners and designers have control over in improving thermal comfort for pedestrians is simply the presence of shade. This is demonstrated by the significance of sun exposure in the regression analysis as well as the site comparison which exemplified how the presence of shade can make a big difference regardless of surrounding environmental factors such as surface type, humidity, or wind speed. The best strategy for increasing shade will be different for different cities. For example, a desert city like Phoenix may have relatively high barriers to implementing a tree canopy-based shade plan due to water scarcity and extreme heat damaging growing trees, while a rural town in Vermont may find planting trees to be a more cost-efficient strategy than building engineered shade structures. While city-specific factors like this will play a dominant role in guiding urban design choices for increasing shade, the MaRTy data does tell us that shade from built structures has the lowest MRT of all shade types. This is great news for cities because built structures deliver numerous other benefits besides shade - they are housing, businesses, transportation infrastructure - all things that are desirable to have. However, buildings are not typically designed in a way that deliberately maximizes shade for pedestrians. This is where more intentional work by planners and designers is required. Planners should update zoning codes with features like increasing densities in residential areas and decreasing minimum setback requirements so that buildings become taller and closer to the sidewalk, producing more shade for pedestrians. These changes would also work to solve other problems such as improving housing affordability and decreasing environmentally harmful sprawling development patterns. Designers should take into account more nuanced details when designing spaces for pedestrians such as decreasing impervious surfaces which retain and reflect more heat than natural surfaces, or ensuring that shade-providing structures do not block the cooling effects of wind. Even if these variables have a smaller impact statistically, all together they can add up to make a meaningful difference.
-
-# Your Submission
-
-Submit a short report of approximately 700–1,000 words, plus your figures and/or tables. You do not need to write a formal scientific paper. Your report should contain:
-
-1\. Brief introduction
-
-a\. What question are you investigating, and what did you expect to find?
-
-2\. Methods
-
-a\. Briefly describe the provided dataset and state what tool or tools you used for the analysis. If you used AI, identify the AI tool.
-
-3\. Results
-
-a\. Include your air temperature vs. MRT comparison, at least two clear figures or tables, and your comparison among shade categories and times of day.
-
-4\. Radiation Detective
-
-a\. Explain the difference between two contrasting locations using evidence from the dataset.
-
-5\. Discussion and Urban Design Recommendation
-
-a\. What do the measurements tell us about shade and pedestrian heat exposure? What should urban designers take away from your analysis?
