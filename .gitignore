@@ -1,0 +1,13 @@
+.vscode/
+MaRTy_files/
+MaRTy.html
+MaRTy.pdf.md
+.quarto/
+*_cache/
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+Data/
+*.xlsx
+*.csv
