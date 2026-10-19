@@ -15,23 +15,9 @@ execute:
     message: false
 ---
 
-```{r}
-#| label: load packages
-#| include: false
-library(tidyverse)
-library(readxl)
-library(lmtest)
-library(car)
-library(knitr)
-library(kableExtra)
-```
 
-```{r}
-#| label: import data
-#| include: false
-marty <- read_excel('C:\\Users\\matts\\OneDrive\\Documents\\MUEP-Kyle0\\GPH 598\\MaRTy_50Grades_Subset_Working.xlsx',)
-view(marty)
-```
+
+
 
 # Introduction
 
@@ -39,22 +25,15 @@ MaRTy is a mobile device used to measure mean radiant temperature (MRT) across a
 
 # Air Temperature vs. MRT
 
-```{r}
-#| label: Create new variable 'diff'
-#| include: false
-marty$diff <- marty$MRT_C_detrended - marty$AirT_C_detrended
-```
 
-```{r}
-#| label: Create histogram
-#| include: true
-#| fig-cap: "Differences between Air Temperature and MRT"
-hist_diff <- ggplot(marty, aes(x = diff)) +
-    geom_histogram(
-        color = "black", fill = "steelblue") +
-        labs(x = "Difference", y = "Frequency")
-hist_diff + theme_classic()
-```
+
+
+::: {.cell}
+::: {.cell-output-display}
+![Differences between Air Temperature and MRT](MaRTy_files/figure-pdf/Create histogram-1.pdf)
+:::
+:::
+
 
 The histogram shows us that broadly, air temperature and MRT are fairly similar. The largest columns are all clustered around 0, meaning there are a lot of results with only a small difference between the two variables. However, there is also a small but noticeable cluster of results with a larger difference (around 20-40), showing that there are plenty of exceptions where the two values diverge.
 
@@ -62,118 +41,130 @@ The histogram shows us that broadly, air temperature and MRT are fairly similar.
 
 To answer the question of why two locations with similar air temperatures can have different MRT, a multiple linear regression model was created to measure the influence of different variables on the difference between air temperature and MRT. The independent variables selected for this model were Time_of_Day, Surface_Type, Shade_Category2, RH, and WindSpeed_ms because they are each representative of a unique measurement, avoiding the problem of multicollinearity.
 
-```{r}
-#| label: linear regression
-#| include: true
-# dependent variable: diff
-# independent variables: Time_of_Day, Surface_Type, Shade_Category2, RH, WindSpeed_ms
 
-# build model
-reg_diff <- lm(diff ~ Time_of_Day + Surface_Type + Shade_Category2 + RH + WindSpeed_ms, data = marty)
+::: {.cell}
+::: {.cell-output .cell-output-stdout}
 
-summary(reg_diff)
 ```
-\medskip
+
+Call:
+lm(formula = diff ~ Time_of_Day + Surface_Type + Shade_Category2 + 
+    RH + WindSpeed_ms, data = marty)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-15.492  -3.955   1.092   4.894  13.915 
+
+Coefficients:
+                                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                       1.70161    2.76766   0.615   0.5398    
+Time_of_Day3:30 PM                0.07057    1.55420   0.045   0.9639    
+Time_of_Day8:30 PM              -15.06639    1.52085  -9.907  < 2e-16 ***
+Surface_Typegravel                2.75927    2.23682   1.234   0.2198    
+Surface_Typeimpervious            2.88574    1.80529   1.598   0.1126    
+Shade_Category2Engineered shade   4.88870    1.95633   2.499   0.0138 *  
+Shade_Category2Sun-exposed       15.38850    1.76921   8.698 2.22e-14 ***
+Shade_Category2Tree shade         2.05451    1.91307   1.074   0.2850    
+RH                                0.05832    0.08882   0.657   0.5127    
+WindSpeed_ms                      1.07224    0.87521   1.225   0.2229    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.531 on 119 degrees of freedom
+Multiple R-squared:  0.7022,	Adjusted R-squared:  0.6797 
+F-statistic: 31.18 on 9 and 119 DF,  p-value: < 2.2e-16
+```
+
+
+:::
+:::
+
+\bigskip
 The two most influential variables were 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed'. They both have p-values of the highest significance rating (confidence interval of 100%) and the highest coefficients in the model. 'Time_of_Day8:30 PM' has a coefficient of -15.46, meaning it causes the difference between air temperature and MRT to go in a negative direction, while 'Shade_Category2Sun-exposed' has a coefficient of 15.46, causing the difference to increase. The variable 'Shade_Category2Engineered shade' also had a statistically significant influence, with a coefficient of 4.99 and a confidence interval of 99%, meaning it has a moderate effect of increasing the difference between air temperature and MRT. Overall, this model has an adjusted R-squared of 0.68, meaning it explains about 68% of variation in the difference between air temperature and MRT.
 
-```{r}
-#| label: VIF
-#| include: true
-#| tbl-cap: "VIF Analysis"
-vif_reg_diff <- car::vif(reg_diff)
-kable(vif_reg_diff)
-```
+
+::: {.cell tbl-cap='VIF Analysis'}
+::: {.cell-output-display}
+
+
+|                |     GVIF| Df| GVIF^(1/(2*Df))|
+|:---------------|--------:|--:|---------------:|
+|Time_of_Day     | 1.682624|  2|        1.138929|
+|Surface_Type    | 1.527595|  2|        1.111737|
+|Shade_Category2 | 1.705605|  3|        1.093066|
+|RH              | 1.620202|  1|        1.272872|
+|WindSpeed_ms    | 1.194580|  1|        1.092968|
+
+
+:::
+:::
+
 
 The VIF analysis shows that none of the variables have a VIF of greater than 2.0, much lower than the typical threshold of 5.0, confirming that multicollinearity is not an issue with this model.
 
-```{r}
-#| label: ANOVA
-#| include: true
-#| tbl-cap: "ANOVA Analysis"
-anova_reg_diff <- anova(reg_diff)
-kable(anova_reg_diff)
-```
+
+::: {.cell tbl-cap='ANOVA Analysis'}
+::: {.cell-output-display}
+
+
+|                |  Df|     Sum Sq|    Mean Sq|    F value|    Pr(>F)|
+|:---------------|---:|----------:|----------:|----------:|---------:|
+|Time_of_Day     |   2| 6687.40942| 3343.70471| 78.4013320| 0.0000000|
+|Surface_Type    |   2|  254.17746|  127.08873|  2.9799061| 0.0546019|
+|Shade_Category2 |   3| 4941.17763| 1647.05921| 38.6193301| 0.0000000|
+|RH              |   1|   21.54406|   21.54406|  0.5051531| 0.4786353|
+|WindSpeed_ms    |   1|   64.01199|   64.01199|  1.5009177| 0.2229496|
+|Residuals       | 119| 5075.17985|   42.64857|         NA|        NA|
+
+
+:::
+:::
+
 
 This ANOVA analysis confirms that there is a large variance in the Time_of_Day and Shade_Category2 categorical variables, as shown by their high F values and low p-values. Surface_Type also shows up as the next most impactful category, but with a much smaller F value and a confidence interval of around 94.5%, just under the usual threshold for statistical significance.
 
 # How Much Does Shade Matter?
 
-```{r}
-#| label: bar chart
-#| include: true
-#| fig-width: 8
-#| fig-height: 6
-#| fig-cap: "Mean MRT by Shade Category"
-bars_MRT <- ggplot(marty, aes(Shade_Category2, MRT_C_detrended, fill = Shade_Category2)) +
-    geom_bar(position='dodge', stat='summary', fun='mean', width = 0.7) +
-    scale_fill_manual(values = c(
-        "Built shade" = "firebrick",
-        "Engineered shade" = "steelblue",
-        "Sun-exposed" = "goldenrod",
-        "Tree shade" = "forestgreen"
-    )) +
-    labs(
-        x = "Shade Category",
-        y = "Mean MRT"
-    ) + 
-    scale_y_continuous(breaks = seq(0, 60, by = 10))    
-bars_MRT + theme_classic()
-```
+
+::: {.cell}
+::: {.cell-output-display}
+![Mean MRT by Shade Category](MaRTy_files/figure-pdf/bar chart-1.pdf)
+:::
+:::
+
 
 This bar chart shows how average MRT compares across each shade category. From this, we can see that built shade has the lowest average MRT, followed closely by tree shade, with engineered shade having the highest average MRT among types of shade, but still much lower than the average MRT in sun-exposed areas.
 
 # Does Time of Day Matter?
 
-```{r}
-#| label: prepare data
-#| include: false
-marty$time <- as.integer(format(strptime(marty$Time_of_Day, "%I:%M %p"), "%H%M"))
-marty$shade <- if_else(marty$Shade_Type == "exposed", 0L, 1L)
-marty$shade <- factor(marty$shade, levels = c(0, 1), labels = c("exposed", "shade"))
 
-# create averages for shade + time
-tod_summary <- marty |>
-    group_by(time, shade) |>
-    summarize(MRT_mean = mean(MRT_C_detrended, na.tm = TRUE), .groups = "drop")
-```
 
-```{r}
-#| label: time of day line graph
-#| include: true
-#| fig-width: 8
-#| fig-height: 6
-#| fig-cap: "Average MRT over Time"
-line_TOD <- ggplot(tod_summary, aes(x = time, y = MRT_mean, color = shade, group = shade)) +
-    geom_line(linewidth = 1.2) +
-    geom_point(size = 3) +
-    scale_color_manual(
-        name = "Shade Type", 
-        values = c("goldenrod", "steelblue")) +
-    labs(
-        x = "Time (24-hour)",
-        y = "Average MRT"
-    )
-line_TOD + theme_classic()
-```
+
+::: {.cell}
+::: {.cell-output-display}
+![Average MRT over Time](MaRTy_files/figure-pdf/time of day line graph-1.pdf)
+:::
+:::
+
 
 This line chart shows the difference in the average MRT of shaded versus exposed areas over time - measurements were taken at 12:30 PM (1230), 3:30 PM (1530), and 8:30 PM (2030). From this graphic, we can see that between 12:30 and 3:30, the MRT of sun-exposed areas sharply rises while in shaded areas it stays flat. However, by 8:30, we see that the average temperature of sun-exposed areas actually falls below that of shaded areas. Naturally, shade has a much greater impact on MRT during the day when it can block the sun's radiation than at night when all areas are 'shaded'. 
 
 # Site Comparison
 
-```{r}
-#| tbl-cap: "Site Comparison"
-examples <- marty[c(72, 13), ]
-examples <- subset(examples, select = -c(Shade_Category2, Shade_Type_No, Surface_Cover_No, time, shade, Latitude, Longitude, Tree_Type, Shade_Type, diff, Surface_Type, Location_ID))
 
-names(examples)[1] <- "\\makecell{Shade\\\\Category}"
-names(examples)[2] <- "\\makecell{Surface\\\\Cover}"
-names(examples)[3] <- "\\makecell{Time of\\\\Day}"
-names(examples)[5] <- "\\makecell{Wind\\\\Speed}"
-names(examples)[6] <- "\\makecell{Air\\\\Temp (C)}"
-names(examples)[7] <- "\\makecell{MRT\\\\(C)}"
+::: {.cell tbl-cap='Site Comparison'}
+::: {.cell-output-display}
 
-kable(examples, longtable = FALSE)
-```
+
+|\makecell{Shade\\Category} |\makecell{Surface\\Cover} |\makecell{Time of\\Day} |    RH| \makecell{Wind\\Speed}| \makecell{Air\\Temp (C)}| \makecell{MRT\\(C)}|
+|:--------------------------|:-------------------------|:-----------------------|-----:|----------------------:|------------------------:|-------------------:|
+|Tree shade                 |gravel                    |8:30 PM                 |  7.93|                   0.40|                    37.61|               35.08|
+|Sun-exposed                |concrete rough            |12:30 PM                | 10.79|                   0.45|                    35.30|               59.94|
+
+
+:::
+:::
+
 
 These two sites have very similar air temperatures (37.61C and 35.30C) and very different MRTs (35.08C and 59.94C). One is a tree-shaded gravel site from 8:30PM, and the other is a sun-exposed concrete site at 12:30PM. They both have fairly low relative humidity (7.93 and 10.79) and similar wind speeds (0.40 and 0.45). Gravel and concrete are both impervious surfaces, so the biggest differences between the sites are shade type and time of day. This is consistent with the regression model built earlier which found 'Time_of_Day8:30 PM' and 'Shade_Category2Sun-exposed' to be the most influential variables in determining the difference between air temperature and MRT.
 
